@@ -1,0 +1,340 @@
+<div id="poster939-container"></div>
+
+<style>
+  #poster939-container {
+    font-family: Arial, sans-serif;
+    max-width: 900px;
+    margin: 0 auto;
+    background: #0d0d0d;
+    padding: 20px;
+    border-radius: 12px;
+    color: #e6e6e6;
+    border: 1px solid #0ff;
+  }
+
+  .poster939-title {
+    text-align: center;
+    font-size: 26px;
+    margin-bottom: 20px;
+    color: #0ff;
+    font-weight: bold;
+  }
+
+  .poster939-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .poster939-controls div {
+    flex: 1 1 250px;
+  }
+
+  .poster939-label {
+    font-size: 14px;
+    margin-bottom: 6px;
+    display: block;
+    color: #0ff;
+  }
+
+  .poster939-input, .poster939-color, .poster939-select {
+    width: 100%;
+    padding: 10px;
+    background: #1a1a1a;
+    border: 1px solid #0ff;
+    border-radius: 6px;
+    color: #0ff;
+    margin-bottom: 10px;
+  }
+
+  #poster939-canvas {
+    width: 100%;
+    border: 2px solid #0ff;
+    border-radius: 10px;
+    background: #111;
+    cursor: crosshair;
+  }
+
+  .poster939-btn {
+    width: 100%;
+    padding: 12px;
+    background: #0ff;
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+
+  .poster939-btn:hover {
+    background: #00cccc;
+  }
+</style>
+
+<script>
+(function() {
+  const container = document.getElementById("poster939-container");
+
+  container.innerHTML = `
+    <div class="poster939-title">Fast Flyer</div>
+
+    <div class="poster939-controls">
+
+      <div>
+        <label class="poster939-label">Template</label>
+        <select id="poster939-template" class="poster939-select">
+          <option value="event">Event Flyer</option>
+          <option value="promo">Promo Poster</option>
+          <option value="announce">Announcement</option>
+          <option value="sale">Sale Flyer</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="poster939-label">Headline</label>
+        <input id="poster939-headline" class="poster939-input" placeholder="Enter headline">
+      </div>
+
+      <div>
+        <label class="poster939-label">Headline Font</label>
+        <select id="poster939-font-headline" class="poster939-select">
+          <option value="Arial">Arial</option>
+          <option value="Impact">Impact</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Verdana">Verdana</option>
+          <option value="Courier New">Courier New</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="poster939-label">Sub‑Headline</label>
+        <input id="poster939-sub" class="poster939-input" placeholder="Enter sub‑headline">
+      </div>
+
+      <div>
+        <label class="poster939-label">Sub‑Headline Font</label>
+        <select id="poster939-font-sub" class="poster939-select">
+          <option value="Arial">Arial</option>
+          <option value="Impact">Impact</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Verdana">Verdana</option>
+          <option value="Courier New">Courier New</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="poster939-label">Body Text</label>
+        <textarea id="poster939-body" class="poster939-input" style="height:80px;" placeholder="Enter body text"></textarea>
+      </div>
+
+      <div>
+        <label class="poster939-label">Body Font</label>
+        <select id="poster939-font-body" class="poster939-select">
+          <option value="Arial">Arial</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Verdana">Verdana</option>
+          <option value="Courier New">Courier New</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="poster939-label">Background Color</label>
+        <input id="poster939-bg" type="color" class="poster939-color" value="#000000">
+      </div>
+
+      <div>
+        <label class="poster939-label">Text Color</label>
+        <input id="poster939-textcolor" type="color" class="poster939-color" value="#00ffff">
+      </div>
+
+      <div>
+        <label class="poster939-label">Upload Image (Logo/Photo)</label>
+        <input id="poster939-img" type="file" accept="image/*" class="poster939-input">
+      </div>
+
+      <div>
+        <label class="poster939-label">QR Code Link</label>
+        <input id="poster939-qr" class="poster939-input" placeholder="https://">
+      </div>
+
+      <div>
+        <label class="poster939-label">Lock Headline to Top of Image</label>
+        <select id="poster939-lock" class="poster939-select">
+          <option value="on">ON (Snap Always)</option>
+          <option value="off">OFF (Free Drag)</option>
+        </select>
+      </div>
+
+    </div>
+
+    <canvas id="poster939-canvas" width="800" height="1100"></canvas>
+
+    <button class="poster939-btn" onclick="poster939_export()">Download Poster</button>
+  `;
+
+  const canvas = document.getElementById("poster939-canvas");
+  const ctx = canvas.getContext("2d");
+
+  let uploadedImg = null;
+  let qrImg = null;
+
+  let dragTarget = null;
+  const positions = {
+    headline: { x: 400, y: 200 },
+    sub: { x: 400, y: 280 },
+    body: { x: 400, y: 360 }
+  };
+
+  canvas.addEventListener("mousedown", function(e) {
+    const { offsetX, offsetY } = e;
+
+    if (hitText(offsetX, offsetY, "headline") && document.getElementById("poster939-lock").value === "off")
+      dragTarget = "headline";
+    else if (hitText(offsetX, offsetY, "sub"))
+      dragTarget = "sub";
+    else if (hitText(offsetX, offsetY, "body"))
+      dragTarget = "body";
+  });
+
+  canvas.addEventListener("mousemove", function(e) {
+    if (!dragTarget) return;
+    positions[dragTarget].x = e.offsetX;
+    positions[dragTarget].y = e.offsetY;
+    poster939_render();
+  });
+
+  canvas.addEventListener("mouseup", () => dragTarget = null);
+  canvas.addEventListener("mouseleave", () => dragTarget = null);
+
+  function hitText(x, y, key) {
+    const text = document.getElementById("poster939-" + key).value;
+    const font = getFont(key);
+    ctx.font = font;
+    const width = ctx.measureText(text).width;
+    const height = 40;
+    const pos = positions[key];
+    return x > pos.x - width/2 && x < pos.x + width/2 && y > pos.y - height && y < pos.y + 10;
+  }
+
+  function getFont(key) {
+    if (key === "headline") return `bold 70px ${document.getElementById("poster939-font-headline").value}`;
+    if (key === "sub") return `bold 40px ${document.getElementById("poster939-font-sub").value}`;
+    return `28px ${document.getElementById("poster939-font-body").value}`;
+  }
+
+  document.getElementById("poster939-img").addEventListener("change", function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const img = new Image();
+    img.onload = () => { uploadedImg = img; poster939_render(); };
+    img.src = URL.createObjectURL(file);
+  });
+
+  document.getElementById("poster939-qr").addEventListener("input", function() {
+    const url = this.value.trim();
+    if (!url) { qrImg = null; poster939_render(); return; }
+    poster939_generateQR(url);
+  });
+
+  function poster939_generateQR(text) {
+    const size = 200;
+    const qrCanvas = document.createElement("canvas");
+    qrCanvas.width = size;
+    qrCanvas.height = size;
+    const qrCtx = qrCanvas.getContext("2d");
+
+    qrCtx.fillStyle = "#fff";
+    qrCtx.fillRect(0, 0, size, size);
+    qrCtx.fillStyle = "#000";
+
+    for (let i = 0; i < text.length; i++) {
+      const x = (i * 17) % size;
+      const y = Math.floor((i * 17) / size) * 17;
+      qrCtx.fillRect(x, y, 10, 10);
+    }
+
+    qrImg = new Image();
+    qrImg.onload = poster939_render;
+    qrImg.src = qrCanvas.toDataURL();
+  }
+
+  ["headline","sub","body","bg","textcolor","template","lock","font-headline","font-sub","font-body"].forEach(f => {
+    const el = document.getElementById("poster939-" + f);
+    if (el) el.addEventListener("input", poster939_render);
+  });
+
+  function poster939_render() {
+    const bg = document.getElementById("poster939-bg").value;
+    const textColor = document.getElementById("poster939-textcolor").value;
+    const headline = document.getElementById("poster939-headline").value;
+    const sub = document.getElementById("poster939-sub").value;
+    const body = document.getElementById("poster939-body").value;
+    const lock = document.getElementById("poster939-lock").value;
+
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    let imgY = 80;
+    let imgBottom = 200;
+
+    if (uploadedImg) {
+      const w = canvas.width * 0.8;
+      const h = (uploadedImg.height / uploadedImg.width) * w;
+      const imgX = canvas.width * 0.1;
+
+      ctx.drawImage(uploadedImg, imgX, imgY, w, h);
+      imgBottom = imgY + h;
+
+      if (lock === "on") {
+        positions.headline.x = canvas.width / 2;
+        positions.headline.y = imgY + 40;
+      }
+    }
+
+    ctx.fillStyle = textColor;
+    ctx.textAlign = "center";
+
+    ctx.font = getFont("headline");
+    ctx.fillText(headline, positions.headline.x, positions.headline.y);
+
+    ctx.font = getFont("sub");
+    ctx.fillText(sub, positions.sub.x, positions.sub.y);
+
+    ctx.font = getFont("body");
+    wrapText(body, positions.body.x, positions.body.y, 700, 36);
+
+    if (qrImg) {
+      ctx.drawImage(qrImg, canvas.width - 250, canvas.height - 250, 200, 200);
+    }
+  }
+
+  function wrapText(text, x, y, maxWidth, lineHeight) {
+    const words = text.split(" ");
+    let line = "";
+    for (let n = 0; n < words.length; n++) {
+      const testLine = line + words[n] + " ";
+      const metrics = ctx.measureText(testLine);
+      if (metrics.width > maxWidth) {
+        ctx.fillText(line, x, y);
+        line = words[n] + " ";
+        y += lineHeight;
+      } else {
+        line = testLine;
+      }
+    }
+    ctx.fillText(line, x, y);
+  }
+
+  window.poster939_export = function() {
+    const link = document.createElement("a");
+    link.download = "939PRO_poster.png";
+    link.href = canvas.toDataURL();
+    link.click();
+  };
+
+  poster939_render();
+})();
+</script>

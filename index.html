@@ -1,342 +1,1369 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Fast Flyer Pro</title><link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Montserrat:wght@400;700;900&family=Oswald:wght@400;700&family=Pacifico&family=Poppins:wght@400;600;800&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet"></head><body>
-<div id="poster939-container"></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Flyer Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Montserrat:wght@400;700;900&family=Oswald:wght@400;700&family=Pacifico&family=Poppins:wght@400;600;800&family=Roboto+Condensed:wght@400;700&family=Lobster&family=Dancing+Script:wght@700&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-<style>
-  #poster939-container {
-    font-family: Arial, sans-serif;
-    max-width: 900px;
-    margin: 0 auto;
-    background: #0d0d0d;
-    padding: 20px;
-    border-radius: 12px;
-    color: #e6e6e6;
-    border: 1px solid #0ff;
-  }
+    body {
+      font-family: 'Poppins', Arial, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #fff;
+    }
 
-  .poster939-title {
-    text-align: center;
-    font-size: 26px;
-    margin-bottom: 20px;
-    color: #0ff;
-    font-weight: bold;
-  }
+    #app-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
 
-  .poster939-controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 20px;
-  }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
 
-  .poster939-controls div {
-    flex: 1 1 250px;
-  }
+    .header h1 {
+      font-size: 36px;
+      background: linear-gradient(90deg, #00d9ff, #ff00ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+    }
 
-  .poster939-label {
-    font-size: 14px;
-    margin-bottom: 6px;
-    display: block;
-    color: #0ff;
-  }
+    .header p {
+      color: #aaa;
+      font-size: 14px;
+    }
 
-  .poster939-input, .poster939-color, .poster939-select {
-    width: 100%;
-    padding: 10px;
-    background: #1a1a1a;
-    border: 1px solid #0ff;
-    border-radius: 6px;
-    color: #0ff;
-    margin-bottom: 10px;
-  }
+    .main-layout {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 30px;
+    }
 
-  #poster939-canvas {
-    width: 100%;
-    border: 2px solid #0ff;
-    border-radius: 10px;
-    background: #111;
-    cursor: crosshair;
-  }
+    @media (max-width: 1000px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+    }
 
-  .poster939-btn {
-    width: 100%;
-    padding: 12px;
-    background: #0ff;
-    color: #000;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
-    font-weight: bold;
-    margin-top: 10px;
-  }
+    .controls-panel {
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
+      max-height: calc(100vh - 150px);
+      overflow-y: auto;
+    }
 
-  .poster939-btn:hover {
-    background: #00cccc;
-  }
-</style>
+    .tabs {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid rgba(255,255,255,0.1);
+      padding-bottom: 10px;
+    }
 
-<script>
-(function() {
-  const container = document.getElementById("poster939-container");
+    .tab-btn {
+      flex: 1;
+      padding: 10px 8px;
+      background: transparent;
+      border: none;
+      color: #aaa;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: all 0.3s;
+    }
 
-  container.innerHTML = `
-    <div class="poster939-title">Fast Flyer</div>
+    .tab-btn:hover {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
 
-    <div class="poster939-controls">
+    .tab-btn.active {
+      background: linear-gradient(135deg, #00d9ff, #0099cc);
+      color: #fff;
+    }
 
-      <div>
-        <label class="poster939-label">Template</label>
-        <select id="poster939-template" class="poster939-select">
-          <option value="event">Event Flyer</option>
-          <option value="promo">Promo Poster</option>
-          <option value="announce">Announcement</option>
-          <option value="sale">Sale Flyer</option>
-        </select>
-      </div>
+    .tab-content {
+      display: none;
+    }
 
-      <div>
-        <label class="poster939-label">Headline</label>
-        <input id="poster939-headline" class="poster939-input" placeholder="Enter headline">
-      </div>
+    .tab-content.active {
+      display: block;
+    }
 
-      <div>
-        <label class="poster939-label">Headline Font</label>
-        <select id="poster939-font-headline" class="poster939-select">
-          <option value="Arial">Arial</option>
-          <option value="Impact">Impact</option>
-          <option value="Georgia">Georgia</option>
-          <option value="Verdana">Verdana</option>
-          <option value="Courier New">Courier New</option>
-        </select>
-      </div>
+    .control-group {
+      margin-bottom: 20px;
+    }
 
-      <div>
-        <label class="poster939-label">Sub‑Headline</label>
-        <input id="poster939-sub" class="poster939-input" placeholder="Enter sub‑headline">
-      </div>
+    .control-group label {
+      display: block;
+      font-size: 12px;
+      color: #00d9ff;
+      margin-bottom: 8px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
 
-      <div>
-        <label class="poster939-label">Sub‑Headline Font</label>
-        <select id="poster939-font-sub" class="poster939-select">
-          <option value="Arial">Arial</option>
-          <option value="Impact">Impact</option>
-          <option value="Georgia">Georgia</option>
-          <option value="Verdana">Verdana</option>
-          <option value="Courier New">Courier New</option>
-        </select>
-      </div>
+    .control-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
 
-      <div>
-        <label class="poster939-label">Body Text</label>
-        <textarea id="poster939-body" class="poster939-input" style="height:80px;" placeholder="Enter body text"></textarea>
-      </div>
+    .control-row > * {
+      flex: 1;
+    }
 
-      <div>
-        <label class="poster939-label">Body Font</label>
-        <select id="poster939-font-body" class="poster939-select">
-          <option value="Arial">Arial</option>
-          <option value="Georgia">Georgia</option>
-          <option value="Verdana">Verdana</option>
-          <option value="Courier New">Courier New</option>
-        </select>
-      </div>
+    input[type="text"],
+    input[type="url"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(0,217,255,0.3);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
 
-      <div>
-        <label class="poster939-label">Background Color</label>
-        <input id="poster939-bg" type="color" class="poster939-color" value="#000000">
-      </div>
+    input[type="text"]:focus,
+    input[type="url"]:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #00d9ff;
+      box-shadow: 0 0 10px rgba(0,217,255,0.3);
+    }
 
-      <div>
-        <label class="poster939-label">Text Color</label>
-        <input id="poster939-textcolor" type="color" class="poster939-color" value="#00ffff">
-      </div>
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
 
-      <div>
-        <label class="poster939-label">Upload Image (Logo/Photo)</label>
-        <input id="poster939-img" type="file" accept="image/*" class="poster939-input">
-      </div>
+    input[type="color"] {
+      width: 100%;
+      height: 45px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: transparent;
+    }
 
-      <div>
-        <label class="poster939-label">QR Code Link</label>
-        <input id="poster939-qr" class="poster939-input" placeholder="https://">
-      </div>
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.2);
+      outline: none;
+      -webkit-appearance: none;
+    }
 
-      <div>
-        <label class="poster939-label">Lock Headline to Top of Image</label>
-        <select id="poster939-lock" class="poster939-select">
-          <option value="on">ON (Snap Always)</option>
-          <option value="off">OFF (Free Drag)</option>
-        </select>
-      </div>
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #00d9ff;
+      cursor: pointer;
+    }
 
+    .range-value {
+      text-align: right;
+      font-size: 12px;
+      color: #00d9ff;
+      margin-top: 5px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #00d9ff, #0099cc);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(0,217,255,0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .file-input-wrapper input[type=file] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .file-input-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: rgba(0,217,255,0.1);
+      border: 2px dashed rgba(0,217,255,0.5);
+      border-radius: 8px;
+      text-align: center;
+      color: #00d9ff;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .file-input-btn:hover {
+      background: rgba(0,217,255,0.2);
+      border-color: #00d9ff;
+    }
+
+    .preset-colors {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .color-swatch {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.3s;
+    }
+
+    .color-swatch:hover {
+      transform: scale(1.2);
+    }
+
+    .color-swatch.active {
+      border-color: #fff;
+      box-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
+
+    .canvas-container {
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .canvas-actions {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .canvas-actions .btn {
+      width: auto;
+      padding: 10px 20px;
+    }
+
+    #flyer-canvas {
+      max-width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      cursor: move;
+    }
+
+    .checkbox-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .checkbox-wrapper input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .checkbox-wrapper label {
+      margin: 0;
+      color: #fff;
+      text-transform: none;
+      font-size: 14px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: linear-gradient(135deg, #00d9ff, #0099cc);
+      color: #fff;
+      padding: 15px 30px;
+      border-radius: 50px;
+      font-weight: 600;
+      box-shadow: 0 10px 30px rgba(0,217,255,0.4);
+      transition: transform 0.3s;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.05);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0,217,255,0.3);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(0,217,255,0.5);
+    }
+  </style>
+</head>
+<body>
+  <div id="app-container">
+    <div class="header">
+      <h1>⚡ Quick Flyer Pro</h1>
+      <p>Create stunning flyers in seconds</p>
     </div>
 
-    <canvas id="poster939-canvas" width="800" height="1100"></canvas>
+    <div class="main-layout">
+      <div class="controls-panel">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="content">Content</button>
+          <button class="tab-btn" data-tab="design">Design</button>
+          <button class="tab-btn" data-tab="effects">Effects</button>
+          <button class="tab-btn" data-tab="elements">Elements</button>
+        </div>
 
-    <button class="poster939-btn" onclick="poster939_export()">Download Poster</button>
-  `;
+        <!-- Content Tab -->
+        <div class="tab-content active" id="tab-content">
+          <div class="control-group">
+            <label>Template</label>
+            <select id="template">
+              <option value="modern">Modern Clean</option>
+              <option value="bold">Bold Impact</option>
+              <option value="elegant">Elegant</option>
+              <option value="urgent">Urgent Sale</option>
+              <option value="minimal">Minimal</option>
+              <option value="gradient">Gradient Pop</option>
+              <option value="retro">Retro Vibes</option>
+              <option value="corporate">Corporate</option>
+            </select>
+          </div>
 
-  const canvas = document.getElementById("poster939-canvas");
-  const ctx = canvas.getContext("2d");
+          <div class="control-group">
+            <label>Canvas Size</label>
+            <select id="canvasSize">
+              <option value="800x1100">Flyer (8.5x11)</option>
+              <option value="1080x1080">Instagram Square</option>
+              <option value="1200x630">Facebook Social</option>
+              <option value="1080x1920">Instagram Story</option>
+            </select>
+          </div>
 
-  let uploadedImg = null;
-  let qrImg = null;
+          <div class="control-group">
+            <label>Headline</label>
+            <input type="text" id="headline" placeholder="Your main headline here">
+          </div>
 
-  let dragTarget = null;
-  const positions = {
-    headline: { x: 400, y: 200 },
-    sub: { x: 400, y: 280 },
-    body: { x: 400, y: 360 }
-  };
+          <div class="control-group">
+            <label>Sub-headline</label>
+            <input type="text" id="subheadline" placeholder="Supporting text">
+          </div>
 
-  canvas.addEventListener("mousedown", function(e) {
-    const { offsetX, offsetY } = e;
+          <div class="control-group">
+            <label>Body Text</label>
+            <textarea id="bodytext" placeholder="Details, description, or additional information"></textarea>
+          </div>
 
-    if (hitText(offsetX, offsetY, "headline") && document.getElementById("poster939-lock").value === "off")
-      dragTarget = "headline";
-    else if (hitText(offsetX, offsetY, "sub"))
-      dragTarget = "sub";
-    else if (hitText(offsetX, offsetY, "body"))
-      dragTarget = "body";
-  });
+          <div class="control-group">
+            <label>Call to Action</label>
+            <input type="text" id="cta" placeholder="e.g., Buy Now, Register Today">
+          </div>
+        </div>
 
-  canvas.addEventListener("mousemove", function(e) {
-    if (!dragTarget) return;
-    positions[dragTarget].x = e.offsetX;
-    positions[dragTarget].y = e.offsetY;
-    poster939_render();
-  });
+        <!-- Design Tab -->
+        <div class="tab-content" id="tab-design">
+          <div class="control-group">
+            <label>Background Type</label>
+            <select id="bgType">
+              <option value="solid">Solid Color</option>
+              <option value="gradient-v">Vertical Gradient</option>
+              <option value="gradient-h">Horizontal Gradient</option>
+              <option value="gradient-d">Diagonal Gradient</option>
+              <option value="radial">Radial Gradient</option>
+            </select>
+          </div>
 
-  canvas.addEventListener("mouseup", () => dragTarget = null);
-  canvas.addEventListener("mouseleave", () => dragTarget = null);
+          <div class="control-group">
+            <label>Primary Color</label>
+            <input type="color" id="primaryColor" value="#1a1a2e">
+            <div class="preset-colors" id="primaryPresets"></div>
+          </div>
 
-  function hitText(x, y, key) {
-    const text = document.getElementById("poster939-" + key).value;
-    const font = getFont(key);
-    ctx.font = font;
-    const width = ctx.measureText(text).width;
-    const height = 40;
-    const pos = positions[key];
-    return x > pos.x - width/2 && x < pos.x + width/2 && y > pos.y - height && y < pos.y + 10;
-  }
+          <div class="control-group">
+            <label>Secondary Color</label>
+            <input type="color" id="secondaryColor" value="#16213e">
+            <div class="preset-colors" id="secondaryPresets"></div>
+          </div>
 
-  function getFont(key) {
-    if (key === "headline") return `bold 70px ${document.getElementById("poster939-font-headline").value}`;
-    if (key === "sub") return `bold 40px ${document.getElementById("poster939-font-sub").value}`;
-    return `28px ${document.getElementById("poster939-font-body").value}`;
-  }
+          <div class="control-group">
+            <label>Headline Font</label>
+            <select id="headlineFont">
+              <option value="Anton">Anton</option>
+              <option value="Bebas Neue">Bebas Neue</option>
+              <option value="Montserrat">Montserrat</option>
+              <option value="Oswald">Oswald</option>
+              <option value="Pacifico">Pacifico</option>
+              <option value="Lobster">Lobster</option>
+              <option value="Dancing Script">Dancing Script</option>
+              <option value="Arial">Arial</option>
+              <option value="Impact">Impact</option>
+            </select>
+          </div>
 
-  document.getElementById("poster939-img").addEventListener("change", function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const img = new Image();
-    img.onload = () => { uploadedImg = img; poster939_render(); };
-    img.src = URL.createObjectURL(file);
-  });
+          <div class="control-group">
+            <label>Headline Size</label>
+            <input type="range" id="headlineSize" min="24" max="120" value="72">
+            <div class="range-value"><span id="headlineSizeVal">72</span>px</div>
+          </div>
 
-  document.getElementById("poster939-qr").addEventListener("input", function() {
-    const url = this.value.trim();
-    if (!url) { qrImg = null; poster939_render(); return; }
-    poster939_generateQR(url);
-  });
+          <div class="control-group">
+            <label>Body Font</label>
+            <select id="bodyFont">
+              <option value="Poppins">Poppins</option>
+              <option value="Montserrat">Montserrat</option>
+              <option value="Raleway">Raleway</option>
+              <option value="Roboto Condensed">Roboto Condensed</option>
+              <option value="Arial">Arial</option>
+              <option value="Georgia">Georgia</option>
+            </select>
+          </div>
 
-  function poster939_generateQR(text) {
-    const size = 200;
-    const qrCanvas = document.createElement("canvas");
-    qrCanvas.width = size;
-    qrCanvas.height = size;
-    const qrCtx = qrCanvas.getContext("2d");
+          <div class="control-group">
+            <label>Body Size</label>
+            <input type="range" id="bodySize" min="12" max="48" value="24">
+            <div class="range-value"><span id="bodySizeVal">24</span>px</div>
+          </div>
+        </div>
 
-    qrCtx.fillStyle = "#fff";
-    qrCtx.fillRect(0, 0, size, size);
-    qrCtx.fillStyle = "#000";
+        <!-- Effects Tab -->
+        <div class="tab-content" id="tab-effects">
+          <div class="control-group">
+            <label>Text Shadow</label>
+            <div class="checkbox-wrapper">
+              <input type="checkbox" id="textShadow" checked>
+              <label for="textShadow">Enable shadow effect</label>
+            </div>
+          </div>
 
-    for (let i = 0; i < text.length; i++) {
-      const x = (i * 17) % size;
-      const y = Math.floor((i * 17) / size) * 17;
-      qrCtx.fillRect(x, y, 10, 10);
+          <div class="control-group">
+            <label>Shadow Color</label>
+            <input type="color" id="shadowColor" value="#000000">
+          </div>
+
+          <div class="control-group">
+            <label>Shadow Blur</label>
+            <input type="range" id="shadowBlur" min="0" max="20" value="4">
+            <div class="range-value"><span id="shadowBlurVal">4</span>px</div>
+          </div>
+
+          <div class="control-group">
+            <label>Text Outline</label>
+            <div class="checkbox-wrapper">
+              <input type="checkbox" id="textOutline">
+              <label for="textOutline">Enable outline/stroke</label>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label>Outline Color</label>
+            <input type="color" id="outlineColor" value="#00d9ff">
+          </div>
+
+          <div class="control-group">
+            <label>Outline Width</label>
+            <input type="range" id="outlineWidth" min="1" max="10" value="2">
+            <div class="range-value"><span id="outlineWidthVal">2</span>px</div>
+          </div>
+
+          <div class="control-group">
+            <label>Headline Color</label>
+            <input type="color" id="headlineColor" value="#ffffff">
+          </div>
+
+          <div class="control-group">
+            <label>Body Color</label>
+            <input type="color" id="bodyColor" value="#e0e0e0">
+          </div>
+
+          <div class="control-group">
+            <label>CTA Color</label>
+            <input type="color" id="ctaColor" value="#00d9ff">
+          </div>
+        </div>
+
+        <!-- Elements Tab -->
+        <div class="tab-content" id="tab-elements">
+          <div class="control-group">
+            <label>Upload Image</label>
+            <div class="file-input-wrapper">
+              <div class="file-input-btn">📁 Click to upload image</div>
+              <input type="file" id="uploadImage" accept="image/*">
+            </div>
+          </div>
+
+          <div class="control-group" id="imageControls" style="display:none;">
+            <label>Image Opacity</label>
+            <input type="range" id="imageOpacity" min="0.1" max="1" step="0.1" value="1">
+            <div class="range-value"><span id="imageOpacityVal">100</span>%</div>
+
+            <label style="margin-top:15px;">Image Border Radius</label>
+            <input type="range" id="imageRadius" min="0" max="100" value="0">
+            <div class="range-value"><span id="imageRadiusVal">0</span>px</div>
+
+            <label style="margin-top:15px;">Border Style</label>
+            <select id="borderStyle">
+              <option value="none">None</option>
+              <option value="solid">Solid</option>
+              <option value="double">Double</option>
+              <option value="glow">Glow</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label>QR Code URL</label>
+            <input type="url" id="qrUrl" placeholder="https://yourwebsite.com">
+          </div>
+
+          <div class="control-group" id="qrControls" style="display:none;">
+            <label>QR Position</label>
+            <select id="qrPosition">
+              <option value="bottom-right">Bottom Right</option>
+              <option value="bottom-left">Bottom Left</option>
+              <option value="top-right">Top Right</option>
+              <option value="top-left">Top Left</option>
+            </select>
+
+            <label style="margin-top:15px;">QR Size</label>
+            <input type="range" id="qrSize" min="50" max="300" value="150">
+            <div class="range-value"><span id="qrSizeVal">150</span>px</div>
+
+            <label style="margin-top:15px;">QR Color</label>
+            <input type="color" id="qrColor" value="#000000">
+          </div>
+
+          <div class="control-group">
+            <label>Add Badge/Ribbon</label>
+            <select id="badgeType">
+              <option value="none">None</option>
+              <option value="corner">Corner Ribbon</option>
+              <option value="circle">Circle Badge</option>
+              <option value="banner">Top Banner</option>
+            </select>
+          </div>
+
+          <div class="control-group" id="badgeControls" style="display:none;">
+            <label>Badge Text</label>
+            <input type="text" id="badgeText" placeholder="SALE, NEW, HOT">
+
+            <label style="margin-top:15px;">Badge Color</label>
+            <input type="color" id="badgeColor" value="#ff0055">
+          </div>
+
+          <div class="control-group">
+            <label>Drag Mode</label>
+            <div class="checkbox-wrapper">
+              <input type="checkbox" id="dragMode" checked>
+              <label for="dragMode">Allow dragging text elements</label>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 30px; display: flex; gap: 10px;">
+          <button class="btn btn-primary" id="downloadBtn">📥 Download Flyer</button>
+          <button class="btn btn-secondary" id="resetBtn">🔄 Reset</button>
+        </div>
+      </div>
+
+      <div class="canvas-container">
+        <div class="canvas-actions">
+          <button class="btn btn-secondary" id="zoomOut">🔍-</button>
+          <span style="align-self:center; color:#aaa;" id="zoomLevel">100%</span>
+          <button class="btn btn-secondary" id="zoomIn">🔍+</button>
+        </div>
+        <canvas id="flyer-canvas" width="800" height="1100"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Flyer downloaded!</div>
+
+  <script>
+    // Debounce utility for performance
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
     }
 
-    qrImg = new Image();
-    qrImg.onload = poster939_render;
-    qrImg.src = qrCanvas.toDataURL();
-  }
+    // Main application
+    (function() {
+      const canvas = document.getElementById('flyer-canvas');
+      const ctx = canvas.getContext('2d');
+      
+      // State
+      let state = {
+        zoom: 1,
+        uploadedImage: null,
+        qrImage: null,
+        dragElement: null,
+        positions: {
+          headline: { x: 400, y: 150 },
+          subheadline: { x: 400, y: 230 },
+          bodytext: { x: 400, y: 320 },
+          cta: { x: 400, y: 950 }
+        }
+      };
 
-  ["headline","sub","body","bg","textcolor","template","lock","font-headline","font-sub","font-body"].forEach(f => {
-    const el = document.getElementById("poster939-" + f);
-    if (el) el.addEventListener("input", poster939_render);
-  });
+      // Preset colors
+      const colorPresets = [
+        '#1a1a2e', '#16213e', '#0f3460', '#e94560',
+        '#00d9ff', '#ff00ff', '#ffff00', '#00ff00',
+        '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4'
+      ];
 
-  function poster939_render() {
-    const bg = document.getElementById("poster939-bg").value;
-    const textColor = document.getElementById("poster939-textcolor").value;
-    const headline = document.getElementById("poster939-headline").value;
-    const sub = document.getElementById("poster939-sub").value;
-    const body = document.getElementById("poster939-body").value;
-    const lock = document.getElementById("poster939-lock").value;
-
-    ctx.fillStyle = bg;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    let imgY = 80;
-    let imgBottom = 200;
-
-    if (uploadedImg) {
-      const w = canvas.width * 0.8;
-      const h = (uploadedImg.height / uploadedImg.width) * w;
-      const imgX = canvas.width * 0.1;
-
-      ctx.drawImage(uploadedImg, imgX, imgY, w, h);
-      imgBottom = imgY + h;
-
-      if (lock === "on") {
-        positions.headline.x = canvas.width / 2;
-        positions.headline.y = imgY + 40;
+      // Initialize preset color swatches
+      function initColorPresets(containerId, colorInputId) {
+        const container = document.getElementById(containerId);
+        const colorInput = document.getElementById(colorInputId);
+        
+        colorPresets.forEach(color => {
+          const swatch = document.createElement('div');
+          swatch.className = 'color-swatch';
+          swatch.style.background = color;
+          swatch.onclick = () => {
+            colorInput.value = color;
+            render();
+          };
+          container.appendChild(swatch);
+        });
       }
-    }
 
-    ctx.fillStyle = textColor;
-    ctx.textAlign = "center";
+      initColorPresets('primaryPresets', 'primaryColor');
+      initColorPresets('secondaryPresets', 'secondaryColor');
 
-    ctx.font = getFont("headline");
-    ctx.fillText(headline, positions.headline.x, positions.headline.y);
+      // Tab switching
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+          btn.classList.add('active');
+          document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+        });
+      });
 
-    ctx.font = getFont("sub");
-    ctx.fillText(sub, positions.sub.x, positions.sub.y);
+      // Range slider value displays
+      const rangeInputs = ['headlineSize', 'bodySize', 'shadowBlur', 'outlineWidth', 'imageOpacity', 'imageRadius', 'qrSize'];
+      rangeInputs.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+          const display = document.getElementById(id + 'Val');
+          if (display) {
+            input.addEventListener('input', () => {
+              display.textContent = input.value;
+              render();
+            });
+          }
+        }
+      });
 
-    ctx.font = getFont("body");
-    wrapText(body, positions.body.x, positions.body.y, 700, 36);
+      // Conditional control visibility
+      document.getElementById('uploadImage').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+              state.uploadedImage = img;
+              document.getElementById('imageControls').style.display = 'block';
+              render();
+            };
+            img.src = event.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
 
-    if (qrImg) {
-      ctx.drawImage(qrImg, canvas.width - 250, canvas.height - 250, 200, 200);
-    }
-  }
+      document.getElementById('qrUrl').addEventListener('input', function() {
+        const url = this.value.trim();
+        if (url) {
+          generateQRCode(url);
+          document.getElementById('qrControls').style.display = 'block';
+        } else {
+          state.qrImage = null;
+          document.getElementById('qrControls').style.display = 'none';
+          render();
+        }
+      });
 
-  function wrapText(text, x, y, maxWidth, lineHeight) {
-    const words = text.split(" ");
-    let line = "";
-    for (let n = 0; n < words.length; n++) {
-      const testLine = line + words[n] + " ";
-      const metrics = ctx.measureText(testLine);
-      if (metrics.width > maxWidth) {
-        ctx.fillText(line, x, y);
-        line = words[n] + " ";
-        y += lineHeight;
-      } else {
-        line = testLine;
+      document.getElementById('badgeType').addEventListener('change', function() {
+        document.getElementById('badgeControls').style.display = this.value !== 'none' ? 'block' : 'none';
+        render();
+      });
+
+      // Canvas size change
+      document.getElementById('canvasSize').addEventListener('change', function() {
+        const [w, h] = this.value.split('x').map(Number);
+        canvas.width = w;
+        canvas.height = h;
+        // Reset positions proportionally
+        state.positions.headline.x = w / 2;
+        state.positions.subheadline.x = w / 2;
+        state.positions.bodytext.x = w / 2;
+        state.positions.cta.x = w / 2;
+        render();
+      });
+
+      // Zoom controls
+      document.getElementById('zoomIn').addEventListener('click', () => {
+        if (state.zoom < 2) {
+          state.zoom += 0.1;
+          updateZoomDisplay();
+        }
+      });
+
+      document.getElementById('zoomOut').addEventListener('click', () => {
+        if (state.zoom > 0.5) {
+          state.zoom -= 0.1;
+          updateZoomDisplay();
+        }
+      });
+
+      function updateZoomDisplay() {
+        document.getElementById('zoomLevel').textContent = Math.round(state.zoom * 100) + '%';
+        canvas.style.transform = `scale(${state.zoom})`;
+        canvas.style.transformOrigin = 'top center';
       }
-    }
-    ctx.fillText(line, x, y);
-  }
 
-  window.poster939_export = function() {
-    const link = document.createElement("a");
-    link.download = "939PRO_poster.png";
-    link.href = canvas.toDataURL();
-    link.click();
-  };
+      // Drag functionality
+      canvas.addEventListener('mousedown', handleMouseDown);
+      canvas.addEventListener('mousemove', handleMouseMove);
+      canvas.addEventListener('mouseup', () => state.dragElement = null);
+      canvas.addEventListener('mouseleave', () => state.dragElement = null);
 
-  poster939_render();
-})();
-</script>
-</body></html>
+      function handleMouseDown(e) {
+        if (!document.getElementById('dragMode').checked) return;
+        
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const x = (e.clientX - rect.left) * scaleX;
+        const y = (e.clientY - rect.top) * scaleY;
+
+        const elements = ['headline', 'subheadline', 'bodytext', 'cta'];
+        for (const elem of elements) {
+          if (isPointInText(x, y, elem)) {
+            state.dragElement = elem;
+            break;
+          }
+        }
+      }
+
+      function handleMouseMove(e) {
+        if (!state.dragElement) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const x = (e.clientX - rect.left) * scaleX;
+        const y = (e.clientY - rect.top) * scaleY;
+
+        state.positions[state.dragElement].x = x;
+        state.positions[state.dragElement].y = y;
+        render();
+      }
+
+      function isPointInText(x, y, element) {
+        const text = document.getElementById(element).value;
+        if (!text) return false;
+
+        const font = getTextFont(element);
+        ctx.font = font;
+        const metrics = ctx.measureText(text);
+        const width = metrics.width;
+        const height = getElementHeight(element);
+        const pos = state.positions[element];
+
+        return x >= pos.x - width/2 - 10 && 
+               x <= pos.x + width/2 + 10 && 
+               y >= pos.y - height && 
+               y <= pos.y + 10;
+      }
+
+      function getElementHeight(element) {
+        switch(element) {
+          case 'headline': return 80;
+          case 'subheadline': return 50;
+          case 'bodytext': return 100;
+          case 'cta': return 50;
+          default: return 30;
+        }
+      }
+
+      // QR Code generation using a simple algorithm
+      function generateQRCode(url) {
+        const size = 200;
+        const qrCanvas = document.createElement('canvas');
+        qrCanvas.width = size;
+        qrCanvas.height = size;
+        const qrCtx = qrCanvas.getContext('2d');
+
+        // Create a simple QR-like pattern (in production, use a real QR library)
+        qrCtx.fillStyle = '#ffffff';
+        qrCtx.fillRect(0, 0, size, size);
+        
+        const color = document.getElementById('qrColor').value;
+        qrCtx.fillStyle = color;
+
+        // Generate a deterministic pattern based on URL
+        const hash = url.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        const cellSize = 10;
+        const gridSize = size / cellSize;
+
+        for (let row = 0; row < gridSize; row++) {
+          for (let col = 0; col < gridSize; col++) {
+            // Create position detection patterns in corners
+            if ((row < 7 && col < 7) || 
+                (row < 7 && col >= gridSize - 7) || 
+                (row >= gridSize - 7 && col < 7)) {
+              if (!((row === 1 || row === 5 || col === 1 || col === 5) &&
+                    !(row >= 2 && row <= 4 && col >= 2 && col <= 4))) {
+                qrCtx.fillRect(col * cellSize, row * cellSize, cellSize - 1, cellSize - 1);
+              }
+            } else {
+              // Data area - use hash to create pattern
+              const seed = (hash * (row + 1) * (col + 1)) % 100;
+              if (seed > 45) {
+                qrCtx.fillRect(col * cellSize, row * cellSize, cellSize - 1, cellSize - 1);
+              }
+            }
+          }
+        }
+
+        state.qrImage = new Image();
+        state.qrImage.onload = render;
+        state.qrImage.src = qrCanvas.toDataURL();
+      }
+
+      // Get font for element
+      function getTextFont(element) {
+        if (element === 'headline') {
+          const font = document.getElementById('headlineFont').value;
+          const size = document.getElementById('headlineSize').value;
+          return `bold ${size}px "${font}"`;
+        } else {
+          const font = document.getElementById('bodyFont').value;
+          const size = element === 'cta' ? parseInt(document.getElementById('bodySize').value) + 4 : document.getElementById('bodySize').value;
+          return `${size}px "${font}"`;
+        }
+      }
+
+      // Render function with optimization
+      const render = debounce(function() {
+        const width = canvas.width;
+        const height = canvas.height;
+
+        // Clear canvas
+        ctx.clearRect(0, 0, width, height);
+
+        // Draw background
+        drawBackground(width, height);
+
+        // Draw uploaded image
+        if (state.uploadedImage) {
+          drawImage(width, height);
+        }
+
+        // Draw badge/ribbon
+        drawBadge(width, height);
+
+        // Draw text elements
+        drawText(width, height);
+
+        // Draw QR code
+        if (state.qrImage) {
+          drawQRCode(width, height);
+        }
+      }, 50);
+
+      function drawBackground(width, height) {
+        const bgType = document.getElementById('bgType').value;
+        const primary = document.getElementById('primaryColor').value;
+        const secondary = document.getElementById('secondaryColor').value;
+
+        ctx.fillStyle = primary;
+        
+        switch(bgType) {
+          case 'gradient-v':
+            const gradV = ctx.createLinearGradient(0, 0, 0, height);
+            gradV.addColorStop(0, primary);
+            gradV.addColorStop(1, secondary);
+            ctx.fillStyle = gradV;
+            break;
+          case 'gradient-h':
+            const gradH = ctx.createLinearGradient(0, 0, width, 0);
+            gradH.addColorStop(0, primary);
+            gradH.addColorStop(1, secondary);
+            ctx.fillStyle = gradH;
+            break;
+          case 'gradient-d':
+            const gradD = ctx.createLinearGradient(0, 0, width, height);
+            gradD.addColorStop(0, primary);
+            gradD.addColorStop(1, secondary);
+            ctx.fillStyle = gradD;
+            break;
+          case 'radial':
+            const gradR = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, width/2);
+            gradR.addColorStop(0, primary);
+            gradR.addColorStop(1, secondary);
+            ctx.fillStyle = gradR;
+            break;
+        }
+
+        ctx.fillRect(0, 0, width, height);
+      }
+
+      function drawImage(width, height) {
+        const img = state.uploadedImage;
+        const opacity = document.getElementById('imageOpacity').value;
+        const radius = document.getElementById('imageRadius').value;
+        const borderStyle = document.getElementById('borderStyle').value;
+
+        const imgWidth = width * 0.7;
+        const imgHeight = (img.height / img.width) * imgWidth;
+        const imgX = (width - imgWidth) / 2;
+        const imgY = height * 0.15;
+
+        ctx.save();
+        ctx.globalAlpha = opacity;
+
+        if (radius > 0) {
+          ctx.beginPath();
+          ctx.roundRect(imgX, imgY, imgWidth, imgHeight, radius);
+          ctx.clip();
+        }
+
+        ctx.drawImage(img, imgX, imgY, imgWidth, imgHeight);
+
+        // Draw border
+        if (borderStyle !== 'none') {
+          ctx.lineWidth = 3;
+          switch(borderStyle) {
+            case 'solid':
+              ctx.strokeStyle = '#ffffff';
+              if (radius > 0) {
+                ctx.beginPath();
+                ctx.roundRect(imgX, imgY, imgWidth, imgHeight, radius);
+                ctx.stroke();
+              } else {
+                ctx.strokeRect(imgX, imgY, imgWidth, imgHeight);
+              }
+              break;
+            case 'double':
+              ctx.strokeStyle = '#00d9ff';
+              if (radius > 0) {
+                ctx.beginPath();
+                ctx.roundRect(imgX, imgY, imgWidth, imgHeight, radius);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.roundRect(imgX + 5, imgY + 5, imgWidth - 10, imgHeight - 10, radius - 5);
+                ctx.stroke();
+              } else {
+                ctx.strokeRect(imgX, imgY, imgWidth, imgHeight);
+                ctx.strokeRect(imgX + 5, imgY + 5, imgWidth - 10, imgHeight - 10);
+              }
+              break;
+            case 'glow':
+              ctx.shadowColor = '#00d9ff';
+              ctx.shadowBlur = 20;
+              ctx.strokeStyle = '#00d9ff';
+              if (radius > 0) {
+                ctx.beginPath();
+                ctx.roundRect(imgX, imgY, imgWidth, imgHeight, radius);
+                ctx.stroke();
+              } else {
+                ctx.strokeRect(imgX, imgY, imgWidth, imgHeight);
+              }
+              ctx.shadowBlur = 0;
+              break;
+          }
+        }
+
+        ctx.restore();
+      }
+
+      function drawBadge(width, height) {
+        const badgeType = document.getElementById('badgeType').value;
+        if (badgeType === 'none') return;
+
+        const text = document.getElementById('badgeText').value || 'SALE';
+        const color = document.getElementById('badgeColor').value;
+
+        ctx.save();
+        ctx.fillStyle = color;
+
+        switch(badgeType) {
+          case 'corner':
+            ctx.beginPath();
+            ctx.moveTo(width - 150, 0);
+            ctx.lineTo(width, 0);
+            ctx.lineTo(width, 150);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.save();
+            ctx.translate(width - 50, 50);
+            ctx.rotate(Math.PI / 4);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(text, 0, 5);
+            ctx.restore();
+            break;
+
+          case 'circle':
+            ctx.beginPath();
+            ctx.arc(100, 100, 60, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 18px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, 100, 100);
+            break;
+
+          case 'banner':
+            ctx.fillRect(0, 0, width, 50);
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 20px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, width / 2, 25);
+            break;
+        }
+
+        ctx.restore();
+      }
+
+      function drawText(width, height) {
+        const textShadow = document.getElementById('textShadow').checked;
+        const shadowColor = document.getElementById('shadowColor').value;
+        const shadowBlur = parseInt(document.getElementById('shadowBlur').value);
+        const textOutline = document.getElementById('textOutline').checked;
+        const outlineColor = document.getElementById('outlineColor').value;
+        const outlineWidth = parseInt(document.getElementById('outlineWidth').value);
+
+        const elements = [
+          { id: 'headline', yPos: 0.15 },
+          { id: 'subheadline', yPos: 0.22 },
+          { id: 'bodytext', yPos: 0.35 },
+          { id: 'cta', yPos: 0.85 }
+        ];
+
+        elements.forEach(elem => {
+          const text = document.getElementById(elem.id).value;
+          if (!text) return;
+
+          const pos = state.positions[elem.id];
+          const font = getTextFont(elem.id);
+          const color = elem.id === 'headline' ? document.getElementById('headlineColor').value :
+                       elem.id === 'cta' ? document.getElementById('ctaColor').value :
+                       document.getElementById('bodyColor').value;
+
+          ctx.save();
+          ctx.font = font;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'bottom';
+
+          // Apply shadow
+          if (textShadow) {
+            ctx.shadowColor = shadowColor;
+            ctx.shadowBlur = shadowBlur;
+            ctx.shadowOffsetX = 2;
+            ctx.shadowOffsetY = 2;
+          }
+
+          // Draw outline first
+          if (textOutline) {
+            ctx.strokeStyle = outlineColor;
+            ctx.lineWidth = outlineWidth;
+            ctx.strokeText(text, pos.x, pos.y);
+          }
+
+          // Draw text
+          ctx.fillStyle = color;
+          
+          if (elem.id === 'bodytext') {
+            wrapText(text, pos.x, pos.y, width * 0.8, 32);
+          } else {
+            ctx.fillText(text, pos.x, pos.y);
+          }
+
+          ctx.restore();
+        });
+      }
+
+      function wrapText(text, x, y, maxWidth, lineHeight) {
+        const words = text.split(' ');
+        let line = '';
+        let currentY = y;
+
+        for (let n = 0; n < words.length; n++) {
+          const testLine = line + words[n] + ' ';
+          const metrics = ctx.measureText(testLine);
+          
+          if (metrics.width > maxWidth && n > 0) {
+            ctx.fillText(line, x, currentY);
+            line = words[n] + ' ';
+            currentY += lineHeight;
+          } else {
+            line = testLine;
+          }
+        }
+        ctx.fillText(line, x, currentY);
+      }
+
+      function drawQRCode(width, height) {
+        const position = document.getElementById('qrPosition').value;
+        const size = parseInt(document.getElementById('qrSize').value);
+        const padding = 20;
+
+        let x, y;
+        switch(position) {
+          case 'bottom-right':
+            x = width - size - padding;
+            y = height - size - padding;
+            break;
+          case 'bottom-left':
+            x = padding;
+            y = height - size - padding;
+            break;
+          case 'top-right':
+            x = width - size - padding;
+            y = padding;
+            break;
+          case 'top-left':
+            x = padding;
+            y = padding;
+            break;
+        }
+
+        ctx.drawImage(state.qrImage, x, y, size, size);
+      }
+
+      // Template system
+      document.getElementById('template').addEventListener('change', applyTemplate);
+
+      function applyTemplate() {
+        const template = document.getElementById('template').value;
+        
+        const templates = {
+          modern: {
+            primaryColor: '#1a1a2e',
+            secondaryColor: '#16213e',
+            headlineColor: '#ffffff',
+            bodyColor: '#e0e0e0',
+            ctaColor: '#00d9ff',
+            headlineFont: 'Montserrat',
+            bodyFont: 'Poppins',
+            bgType: 'gradient-v'
+          },
+          bold: {
+            primaryColor: '#000000',
+            secondaryColor: '#ff0000',
+            headlineColor: '#ffffff',
+            bodyColor: '#ffffff',
+            ctaColor: '#ffff00',
+            headlineFont: 'Impact',
+            bodyFont: 'Arial',
+            bgType: 'solid'
+          },
+          elegant: {
+            primaryColor: '#2c3e50',
+            secondaryColor: '#34495e',
+            headlineColor: '#f39c12',
+            bodyColor: '#ecf0f1',
+            ctaColor: '#e74c3c',
+            headlineFont: 'Georgia',
+            bodyFont: 'Georgia',
+            bgType: 'gradient-v'
+          },
+          urgent: {
+            primaryColor: '#ff0000',
+            secondaryColor: '#ff6b6b',
+            headlineColor: '#ffffff',
+            bodyColor: '#ffffff',
+            ctaColor: '#ffff00',
+            headlineFont: 'Anton',
+            bodyFont: 'Arial',
+            bgType: 'radial'
+          },
+          minimal: {
+            primaryColor: '#ffffff',
+            secondaryColor: '#f5f5f5',
+            headlineColor: '#000000',
+            bodyColor: '#333333',
+            ctaColor: '#000000',
+            headlineFont: 'Helvetica',
+            bodyFont: 'Helvetica',
+            bgType: 'solid'
+          },
+          gradient: {
+            primaryColor: '#667eea',
+            secondaryColor: '#764ba2',
+            headlineColor: '#ffffff',
+            bodyColor: '#f0f0f0',
+            ctaColor: '#ffd700',
+            headlineFont: 'Bebas Neue',
+            bodyFont: 'Poppins',
+            bgType: 'gradient-d'
+          },
+          retro: {
+            primaryColor: '#ff6b6b',
+            secondaryColor: '#4ecdc4',
+            headlineColor: '#ffe66d',
+            bodyColor: '#ffffff',
+            ctaColor: '#ff6b6b',
+            headlineFont: 'Pacifico',
+            bodyFont: 'Arial',
+            bgType: 'gradient-h'
+          },
+          corporate: {
+            primaryColor: '#1e3a5f',
+            secondaryColor: '#2c5282',
+            headlineColor: '#ffffff',
+            bodyColor: '#cbd5e0',
+            ctaColor: '#48bb78',
+            headlineFont: 'Roboto Condensed',
+            bodyFont: 'Poppins',
+            bgType: 'gradient-v'
+          }
+        };
+
+        const t = templates[template];
+        if (t) {
+          document.getElementById('primaryColor').value = t.primaryColor;
+          document.getElementById('secondaryColor').value = t.secondaryColor;
+          document.getElementById('headlineColor').value = t.headlineColor;
+          document.getElementById('bodyColor').value = t.bodyColor;
+          document.getElementById('ctaColor').value = t.ctaColor;
+          document.getElementById('headlineFont').value = t.headlineFont;
+          document.getElementById('bodyFont').value = t.bodyFont;
+          document.getElementById('bgType').value = t.bgType;
+          render();
+        }
+      }
+
+      // Download functionality
+      document.getElementById('downloadBtn').addEventListener('click', () => {
+        render();
+        const link = document.createElement('a');
+        link.download = 'flyer_' + Date.now() + '.png';
+        link.href = canvas.toDataURL('image/png', 1.0);
+        link.click();
+        showToast('Flyer downloaded successfully!');
+      });
+
+      // Reset functionality
+      document.getElementById('resetBtn').addEventListener('click', () => {
+        if (confirm('Reset all settings to default?')) {
+          location.reload();
+        }
+      });
+
+      // Toast notification
+      function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+      }
+
+      // Event listeners for all inputs
+      const inputs = document.querySelectorAll('input, select, textarea');
+      inputs.forEach(input => {
+        if (input.type !== 'file') {
+          input.addEventListener('input', render);
+        }
+      });
+
+      // Initial render
+      render();
+    })();
+  </script>
+</body>
+</html>
